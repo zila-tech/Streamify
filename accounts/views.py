@@ -24,7 +24,7 @@ class UserRegistrationView(MailUtils, CreateView):
     model = Account
     form_class = RegistrationForm
     template_name = "accounts/register.html"
-    success_url = reverse_lazy("auth:signup")
+    success_url = reverse_lazy("auth:login")
 
     def form_valid(self, form):
         user = form.save(commit=False)
@@ -40,7 +40,7 @@ class UserRegistrationView(MailUtils, CreateView):
         user.groups.add(group)
 
         # Send activation email
-        self.composeEmail(form, user)
+        self.compose_email(form, user, "account_verification_email.html")
 
         messages.success(
             self.request,
