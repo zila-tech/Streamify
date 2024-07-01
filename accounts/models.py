@@ -66,7 +66,6 @@ class Account(AbstractBaseUser):
     is_staff = models.BooleanField(db_default=False)
     is_active = models.BooleanField(db_default=False)
     is_superadmin = models.BooleanField(db_default=False)
-
     usid = models.CharField(max_length=10, unique=True, editable=False)
 
     USERNAME_FIELD = "email"
