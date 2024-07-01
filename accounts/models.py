@@ -10,7 +10,6 @@ from django.contrib.auth.models import (
 )
 from django.db.models.functions import Now, Concat
 from django.utils.translation import gettext_lazy as _
-import pycountry
 
 
 class MyAccountManager(BaseUserManager):
