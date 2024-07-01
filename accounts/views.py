@@ -24,7 +24,7 @@ class UserRegistrationView(MailUtils, CreateView):
     model = Account
     form_class = RegistrationForm
     template_name = "accounts/register.html"
-    success_url = reverse_lazy("auth:login")
+    success_url = reverse_lazy("auth:signup")
 
     def form_valid(self, form):
         user = form.save(commit=False)
@@ -46,7 +46,7 @@ class UserRegistrationView(MailUtils, CreateView):
             self.request,
             _("Please confirm your email address to complete the registration."),
         )
-        
+
         return redirect(self.success_url)
 
     def form_invalid(self, form):
@@ -54,3 +54,6 @@ class UserRegistrationView(MailUtils, CreateView):
             for error in errors:
                 messages.error(self.request, _(f"{field}: {error}"))
         return super().form_invalid(form)
+
+
+userregistrationview = UserRegistrationView.as_view()
