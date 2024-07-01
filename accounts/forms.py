@@ -7,6 +7,7 @@ from django.contrib.auth import password_validation
 from django.contrib.auth.forms import SetPasswordForm as AuthSetPasswordForm
 from django.utils.translation import gettext_lazy as _
 
+
 class LoginForm(AuthenticationForm):
     username = forms.EmailField(
         widget=forms.EmailInput(
@@ -35,8 +36,6 @@ class CustomUserCreationForm(UserCreationForm):
             "first_name",
             "last_name",
             "gender",
-            "date_of_birth",
-            "country",
         )
 
 
@@ -49,8 +48,6 @@ class CustomUserChangeForm(UserChangeForm):
             "first_name",
             "last_name",
             "gender",
-            "date_of_birth",
-            "country",
             "is_active",
             "is_staff",
             "is_admin",
@@ -82,7 +79,6 @@ class RegistrationForm(forms.ModelForm):
         fields = [
             "first_name",
             "last_name",
-            "country",
             "gender",
             "email",
             "password",
@@ -107,10 +103,6 @@ class RegistrationForm(forms.ModelForm):
                 }
             ),
             "gender": forms.Select(attrs={"class": "form-select ps-15 bg-transparent"}),
-            "country": forms.Select(
-                choices=CountryChoices.as_choices(),
-                attrs={"class": "form-select ps-15 bg-transparent"},
-            ),
         }
 
     def clean_email(self):
@@ -143,7 +135,8 @@ class SetPasswordForm(AuthSetPasswordForm):
     """
     A form that lets a user set their password without entering the old
     password
-    """  
+    """
+
     new_password1 = forms.CharField(
         widget=forms.PasswordInput(
             attrs={
