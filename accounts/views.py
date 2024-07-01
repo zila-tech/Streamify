@@ -57,3 +57,59 @@ class UserRegistrationView(MailUtils, CreateView):
 
 
 userregistrationview = UserRegistrationView.as_view()
+
+
+class ActivateAccountView(View):
+    def get(self, request, uidb64, token):
+        try:
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = get_object_or_404(Account, pk=uid)
+        except (TypeError, ValueError, OverflowError, Account.DoesNotExist):
+            user = None
+
+        if user is not None and default_token_generator.check_token(user, token):
+            user.is_active = True
+            user.save()
+            messages.success(request, _("Congratulations! Your account is activated."))
+            return redirect("auth:login")
+        else:
+            messages.error(request, _("Invalid activation link"))
+            return redirect("auth:register")
+
+
+activateaccountview = ActivateAccountView.as_view()
+
+
+class LoginView(FormView):
+    template_name = "accounts/login.html"
+    form_class = LoginForm
+    success_url = reverse_lazy("auth:user_dashboard")
+
+    def form_valid(self, form):
+        username = form.cleaned_data.get("username")
+        password = form.cleaned_data.get("password")
+        user = auth.authenticate(email=username, password=password)
+        if user is not None:
+            auth.login(self.request, user)
+            messages.success(self.request, _("You are now logged in."))
+            return super().form_valid(form)
+        else:
+            messages.error(self.request, _("Invalid login credentials."))
+            return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, _("Invalid form submission."))
+        return self.render_to_response(self.get_context_data(form=form))
+
+
+loginview = LoginView.as_view()
+
+
+class LogoutView(CustomPermissionMixin, View):
+    def get(self, request):
+        auth.logout(request)
+        messages.success(request, _("You are logged out."))
+        return redirect("auth:login")
+
+
+logoutview = LogoutView.as_view()
