@@ -40,7 +40,9 @@ class UserRegistrationView(MailUtils, CreateView):
         user.groups.add(group)
 
         # Send activation email
-        self.compose_email(form, user, "account_verification_email.html")
+        mail_temp = "accounts/account_verification_email.html"
+        mail_subject = "Activate Your Account"
+        self.compose_email(form, user, mail_subject=mail_subject, mail_temp=mail_temp)
 
         messages.success(
             self.request,
