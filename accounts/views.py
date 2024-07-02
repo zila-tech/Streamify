@@ -129,7 +129,11 @@ class ForgotPasswordView(MailUtils, View):
         email = request.POST.get("email")
         if Account.objects.filter(email=email).exists():
             user = Account.objects.get(email__exact=email)
-            self.compose_email(request, user)
+            mail_temp = "accounts/reset_password_email.html"
+            mail_subject = "Reset Your Password"
+            self.compose_email(
+                self.request, user, mail_subject=mail_subject, mail_temp=mail_temp
+            )
             messages.success(
                 request, _("Password reset email has been sent to your email address.")
             )
