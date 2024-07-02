@@ -13,12 +13,14 @@ class UserTypes:
 
 
 class MailUtils:
-    def compose_email(self, request, user,mail_temp):
+
+    def compose_email(self, request, user, **kwargs):
         current_site = get_current_site(request)
-        mail_subject = "Reset Your Password"
+        mail_subject = kwargs.get("mail_subject", "Default Subject")
+        mail_temp = kwargs.get("mail_temp", "")
 
         message_html = render_to_string(
-            f"accounts/{mail_temp}",
+            mail_temp,
             {
                 "user": user,
                 "domain": current_site.domain,
