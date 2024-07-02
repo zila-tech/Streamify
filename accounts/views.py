@@ -87,7 +87,7 @@ activateaccountview = ActivateAccountView.as_view()
 class LoginView(FormView):
     template_name = "accounts/login.html"
     form_class = LoginForm
-    success_url = reverse_lazy("auth:user_dashboard")
+    success_url = reverse_lazy("auth:signup")
 
     def form_valid(self, form):
         username = form.cleaned_data.get("username")
@@ -117,3 +117,63 @@ class LogoutView(CustomPermissionMixin, View):
 
 
 logoutview = LogoutView.as_view()
+
+
+class ForgotPasswordView(MailUtils, View):
+    template_name = "accounts/forgotPassword.html"
+
+    def get(self, request):
+        return render(request, self.template_name)
+
+    def post(self, request):
+        email = request.POST.get("email")
+        if Account.objects.filter(email=email).exists():
+            user = Account.objects.get(email__exact=email)
+            self.compose_email(request, user)
+            messages.success(
+                request, _("Password reset email has been sent to your email address.")
+            )
+            return redirect("auth:login")
+        else:
+            messages.error(request, _("Account does not exist!"))
+            return redirect("auth:forgotPassword")
+
+
+forgotpasswordview = ForgotPasswordView.as_view()
+
+
+class PasswordResetConfirmView(AuthPasswordResetConfirmView):
+    form_class = SetPasswordForm
+    template_name = "accounts/password_reset_confirm.html"
+    success_url = reverse_lazy("auth:password_reset_complete")
+
+    def form_valid(self, form):
+        user = form.save()
+        messages.success(
+            self.request,
+            _(
+                "Your password has been reset successfully. You can now log in with your new password."
+            ),
+        )
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        for field, errors in form.errors.items():
+            for error in errors:
+                messages.error(self.request, f"{field}: {error}")
+        return super().form_invalid(form)
+
+
+passwordresetconfirmview = PasswordResetConfirmView.as_view()
+
+
+class PasswordResetCompleteView(TemplateView):
+    template_name = "accounts/password_reset_complete.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title_root"] = _("Password Reset Complete - Breast Cancer Prediction")
+        return context
+
+
+passwordresetcompleteview = PasswordResetCompleteView.as_view()
