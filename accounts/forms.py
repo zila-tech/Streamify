@@ -57,21 +57,28 @@ class CustomUserChangeForm(UserChangeForm):
 
 
 class RegistrationForm(forms.ModelForm):
+
+    error_messages = {
+        "password_mismatch": _("The two password fields didn’t match."),
+    }
     password = forms.CharField(
         widget=forms.PasswordInput(
             attrs={
                 "placeholder": "Enter password",
                 "class": "form-control ps-15 bg-transparent",
-            }
-        )
+             }
+        ),
+        strip=False,
+        help_text=password_validation.password_validators_help_text_html(),
     )
     confirm_password = forms.CharField(
+        strip=False,
         widget=forms.PasswordInput(
             attrs={
                 "placeholder": "Confirm password",
                 "class": "form-control ps-15 bg-transparent",
             }
-        )
+        ),
     )
 
     class Meta:
@@ -110,6 +117,17 @@ class RegistrationForm(forms.ModelForm):
         if Account.objects.filter(email=email).exists():
             raise ValidationError("This email is already registered.")
         return email
+
+    def clean_new_password2(self):
+        password = self.cleaned_data.get("password")
+        confirm_password = self.cleaned_data.get("confirm_password")
+        if password and confirm_password and password != confirm_password:
+            raise ValidationError(
+                self.error_messages["password_mismatch"],
+                code="password_mismatch",
+            )
+        password_validation.validate_password(confirm_password, self.user)
+        return confirm_password
 
     def clean(self):
         cleaned_data = super(RegistrationForm, self).clean()
