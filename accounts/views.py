@@ -42,7 +42,9 @@ class UserRegistrationView(MailUtils, CreateView):
         # Send activation email
         mail_temp = "accounts/account_verification_email.html"
         mail_subject = "Activate Your Account"
-        self.compose_email(form, user, mail_subject=mail_subject, mail_temp=mail_temp)
+        self.compose_email(
+            self.request, user, mail_subject=mail_subject, mail_temp=mail_temp
+        )
 
         messages.success(
             self.request,
@@ -76,7 +78,7 @@ class ActivateAccountView(View):
             return redirect("auth:login")
         else:
             messages.error(request, _("Invalid activation link"))
-            return redirect("auth:register")
+            return redirect("auth:signup")
 
 
 activateaccountview = ActivateAccountView.as_view()

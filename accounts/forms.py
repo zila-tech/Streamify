@@ -126,7 +126,7 @@ class RegistrationForm(forms.ModelForm):
                 self.error_messages["password_mismatch"],
                 code="password_mismatch",
             )
-        password_validation.validate_password(confirm_password, self.user)
+        password_validation.validate_password(confirm_password)
         return confirm_password
 
 
