@@ -19,7 +19,7 @@ class Video(models.Model):
     description = models.TextField(_("Description"))
     video_file = models.FileField(_("Video File"), upload_to="videos/")
     created_by = models.ForeignKey(
-        "Account",
+        "accounts.account",
         related_name="owner",
         on_delete=models.SET_NULL,
         blank=True,
