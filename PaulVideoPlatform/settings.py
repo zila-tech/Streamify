@@ -32,7 +32,8 @@ DEFAULT_APPS = [
     "django.contrib.staticfiles",
 ]
 
-LOCAL_APPS = ["accounts"]
+LOCAL_APPS = ["accounts", "videos"]
+
 INSTALLED_APPS = DEFAULT_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
