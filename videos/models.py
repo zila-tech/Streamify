@@ -1,7 +1,10 @@
+from django.utils import timezone
 import random
 from django.db import models
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
+from django.db.models.functions import Now
+
 
 class Video(models.Model):
     """
@@ -29,6 +32,7 @@ class Video(models.Model):
         _("Thumbnail"), upload_to="thumbnails/", null=True, blank=True
     )
     uploaded_at = models.DateTimeField(_("Uploaded At"), auto_now_add=True)
+    date_posted = models.DateTimeField(db_default=Now())
 
     def get_thumbnail(self):
         if self.thumbnail:
@@ -36,7 +40,7 @@ class Video(models.Model):
         else:
             return (
                 settings.STATIC_URL
-                + f"images/default_thumbnails/default_thumbnail-{random.randint(1, 5)}.jpg"
+                + f"images/thumbnails/default_thumbnail-{random.randint(1, 5)}.jpg"
             )
 
     def __str__(self):
