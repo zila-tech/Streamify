@@ -87,7 +87,7 @@ activateaccountview = ActivateAccountView.as_view()
 class LoginView(FormView):
     template_name = "accounts/login.html"
     form_class = LoginForm
-    success_url = reverse_lazy("auth:signup")
+    success_url = reverse_lazy("home")
 
     def form_valid(self, form):
         username = form.cleaned_data.get("username")
@@ -104,6 +104,11 @@ class LoginView(FormView):
     def form_invalid(self, form):
         messages.error(self.request, _("Invalid form submission."))
         return self.render_to_response(self.get_context_data(form=form))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title_root"] = "Login"
+        return context
 
 
 loginview = LoginView.as_view()
