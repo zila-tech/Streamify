@@ -36,3 +36,22 @@ class VideoForm(forms.ModelForm):
             raise forms.ValidationError("Only MP4 files are allowed.")
 
         return video_file
+
+
+class VideoForm(forms.ModelForm):
+    class Meta:
+        model = Video
+        fields = ["title", "description", "video_file", "thumbnail"]
+        widgets = {
+            "title": forms.TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter video title"}
+            ),
+            "description": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Enter video description",
+                }
+            ),
+            "video_file": forms.ClearableFileInput(attrs={"class": "form-control"}),
+            "thumbnail": forms.ClearableFileInput(attrs={"class": "form-control"}),
+        }
