@@ -20,7 +20,7 @@
                         {% endwith %}
                         <div class="ps-20">
                             <h5 class="mb-0">{{user.full_name.title}}</h5>
-                            <p class="my-5 text-fade">Manager</p>
+                            <p class="my-5 text-fade"> {% if user.is_staff %}Manager {% else %}User{% endif %}</p>
                             <a href="mailto:{{user.email}}"><span class="icon-Mail-notification me-5 text-primary"><span class="path1"></span><span class="path2"></span></span> {{user.email}}</a>
                             <button class="btn btn-primary-light btn-sm mt-5" onclick="navigateToUrl(this)" data-url="{% url 'auth:logout' %}">
                                 <i class="ti-new-window"></i> Log out</button>
@@ -44,8 +44,12 @@
                             <span class="icon-Group-chat fs-24"><span class="path1"></span><span class="path2"></span></span>
                         </div>
                         <div class="d-flex flex-column fw-500">
-                            <a href="setting.html" class="text-dark hover-primary mb-1 fs-16">Settings</a>
-                            <span class="text-fade">Accout Settings</span>
+                            <a 
+                                 onclick="navigateToUrl(this)"
+                                    data-url="{% url 'videos' %}"
+                                    href="javascript:void(0);"
+                            class="text-dark hover-primary mb-1 fs-16">Settings</a>
+                            <span class="text-fade">Video Settings</span>
                         </div>
                     </div>
                     {% endif %}
