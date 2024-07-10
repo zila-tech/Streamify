@@ -1,0 +1,287 @@
+{% extends "base.html" %} {% load static %} {% block headers %}
+<style>
+  i {
+    cursor: pointer;
+    font-size: 24px;
+    transition: color 0.3s;
+  }
+
+  i:hover {
+    color: #ddd;
+  }
+  .disabled {
+    color: grey !important;
+    pointer-events: none; /* Prevent click events */
+  }
+
+</style>
+
+<link
+  href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Open+Sans:wght@400;700&display=swap"
+  rel="stylesheet"
+/>
+{% endblock %} {% block content %}
+
+<div class="content">
+  <div class="mt-0 row justify-content-center align-items-center">
+    <div class="col-12 col-md-8 col-lg-8 text-center">
+      <div class="card">
+        <video
+          class="card-img-top"
+          style="max-height: 461.8px"
+          id="videoPlayer"
+        >
+          <source src="{{ video.video_file.url }}" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        <input type="range" id="seeker" value="0" max="100" />
+
+        <div class="card-footer justify-content-between d-flex flex-wrap">
+          <div
+            class="d-flex justify-content-start align-items-center me-3 mb-3 mb-md-0"
+          >
+            <i
+              class="fa fa-volume-up fa-2x text-warning"
+              title="Mute"
+              id="volumeBtn"
+            ></i>
+            <input
+              type="range"
+              id="volumeSlider"
+              min="0"
+              max="1"
+              step="0.1"
+              value="1"
+              class="ms-3"
+            />
+          </div>
+          <i
+            class="fa fa-step-backward text-primary fa-2x me-3 mb-2 mb-md-0"
+            title="Previous video in the playlist"
+            id="prevBtn"
+          ></i>
+          <i
+            class="fa fa-play fa-2x me-3 mb-2 mb-md-0 text-info"
+            id="playPauseBtn"
+            title="Play" 
+          ></i>
+          <i
+            class="fa fa-step-forward fa-2x me-3 mb-2 mb-md-0 text-primary"
+            title="Next video in the playlist"
+            id="nextBtn"
+          ></i>
+          <i
+            class="fa fa-arrows-alt fa-2x me-3 mb-2 mb-md-0 text-primary"
+            title="Toggle the video in fullscreen"
+            id="fullScreenBtn"
+          ></i>
+          <i
+            class="fa fa-refresh fa-2x me-3 mb-2 mb-md-0 text-primary"
+            title="Restart"
+            id="restartBtn"
+          ></i>
+          <i
+            class="fa fa-share fa-2x me-3 mb-2 mb-md-0 text-warning me-10"
+            title="Share"
+            id="share"
+          ></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="my-30 row justify-content-center align-items-center">
+    <div class="col-12 col-md-8 col-lg-6 text-center">
+      <div class="card">
+        <div
+          class="card-header"
+          id="headingOne"
+          data-bs-toggle="collapse"
+          data-bs-target="#collapseOne"
+          aria-expanded="true"
+          aria-controls="collapseOne"
+        >
+          <h5 class="mb-0">{{ video.title.title }}</h5>
+          <i class="fa fa-chevron-down"></i>
+        </div>
+
+        <div
+          id="collapseOne"
+          class="collapse show"
+          aria-labelledby="headingOne"
+          data-bs-parent="#accordionExample"
+        >
+          <div class="card-body">
+            <p class="mb-1">
+              <strong >Date Published:</strong> {{ video.date_posted | date:"M d,Y" }}
+            </p>
+            <p class="mb-0">
+              <strong>Description:</strong> {{ video.description }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% include 'videos/includes/videos.html' %}
+</div>
+
+<!--Videos-->
+{% endblock %} {% block scripts %}
+<script>
+  const videoPlayer = document.getElementById('videoPlayer');
+  const playPauseBtn = document.getElementById('playPauseBtn');
+  const seeker = document.getElementById('seeker');
+  const volumeBtn = document.getElementById('volumeBtn');
+  const fullScreenBtn = document.getElementById('fullScreenBtn');
+  const restartBtn = document.getElementById('restartBtn');
+  const shareBtn = document.getElementById('share');
+  const detailCard = document.getSelection('.card-header');
+  const currentVideoId = '{{ video.id }}';
+  
+
+  document.querySelector('.card-header').addEventListener('click', function () {
+    this.querySelector('.fa').classList.toggle('fa-chevron-down');
+    this.querySelector('.fa').classList.toggle('fa-chevron-up');
+  });
+  // Hide default controls
+  videoPlayer.controls = false;
+  let clickCount = 0;
+  let singleClickTimer;
+
+  function pauseFuc(params) {
+    videoPlayer.pause();
+    playPauseBtn.classList.remove('fa-pause');
+    playPauseBtn.classList.add('fa-play');
+    playPauseBtn.title = 'Play';
+  }
+  function playPauseFunc() {
+    if (videoPlayer.paused) {
+      videoPlayer.play();
+      playPauseBtn.classList.remove('fa-play');
+      playPauseBtn.classList.add('fa-pause');
+      playPauseBtn.title = 'Pause';
+    } else {
+      pauseFuc()
+    }
+  }
+
+  playPauseBtn.addEventListener('click', () => {
+    playPauseFunc();
+  });
+
+  // Adjust volume on slider change
+  volumeSlider.addEventListener('input', () => {
+    videoPlayer.volume = volumeSlider.value;
+    if (videoPlayer.volume === 0) {
+      videoPlayer.muted = true;
+      volumeBtn.classList.remove('fa-volume-up');
+      volumeBtn.classList.add('fa-volume-off');
+    } else {
+      videoPlayer.muted = false;
+      volumeBtn.classList.remove('fa-volume-off');
+      volumeBtn.classList.add('fa-volume-up');
+    }
+  });
+
+  videoPlayer.addEventListener('timeupdate', () => {
+    seeker.value = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+  });
+
+  videoPlayer.addEventListener('ended', function() {
+    pauseFuc()
+  });
+
+  seeker.addEventListener('input', () => {
+    videoPlayer.currentTime = (seeker.value / 100) * videoPlayer.duration;
+  });
+
+  volumeBtn.addEventListener('click', () => {
+    if (videoPlayer.muted) {
+      videoPlayer.muted = false;
+      volumeBtn.classList.remove('fa-volume-off');
+      volumeBtn.classList.add('fa-volume-up');
+      volumeBtn.title = 'Mute';
+    } else {
+      videoPlayer.muted = true;
+      volumeBtn.classList.remove('fa-volume-up');
+      volumeBtn.classList.add('fa-volume-off');
+      volumeBtn.title = 'Unmute';
+    }
+  });
+
+  // Event listener for double click
+  videoPlayer.addEventListener('click', () => {
+    clickCount++;
+
+    if (clickCount === 1) {
+      // Set a timer to reset click count after 300ms
+      singleClickTimer = setTimeout(() => {
+        clickCount = 0;
+      }, 300);
+    } else if (clickCount === 2) {
+      clearTimeout(singleClickTimer);
+      playPauseFunc();
+      clickCount = 0;
+    }
+  });
+
+  fullScreenBtn.addEventListener('click', () => {
+    if (videoPlayer.requestFullscreen) {
+      videoPlayer.requestFullscreen();
+    } else if (videoPlayer.mozRequestFullScreen) {
+      videoPlayer.mozRequestFullScreen();
+    } else if (videoPlayer.webkitRequestFullscreen) {
+      videoPlayer.webkitRequestFullscreen();
+    } else if (videoPlayer.msRequestFullscreen) {
+      videoPlayer.msRequestFullscreen();
+    }
+  });
+
+  shareBtn.addEventListener('click', () => {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).then(() => {
+      alert('Video URL copied to clipboard!' + url);
+    });
+  });
+
+  restartBtn.addEventListener('click', () => {
+    videoPlayer.currentTime = 0;
+    videoPlayer.play();
+    playPauseBtn.classList.remove('fa-play');
+    playPauseBtn.classList.add('fa-pause');
+  });
+
+  prevBtn.addEventListener('click', () => {
+    fetch(`/videos/get-prev-next-ids/${currentVideoId}/`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.prev_video_id) {
+          window.location.href = `{% url 'video-detail' 1 %}`.replace(
+            '1',
+            data.prev_video_id
+          );
+        } else {
+          prevBtn.classList.toggle('text-primary');
+          prevBtn.classList.toggle('disabled');
+        }
+      });
+  });
+
+  nextBtn.addEventListener('click', () => {
+    fetch(`/videos/get-prev-next-ids/${currentVideoId}/`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.next_video_id) {
+          window.location.href = `{% url 'video-detail' 1 %}`.replace(
+            '1',
+            data.next_video_id
+          );
+        } else {
+          nextBtn.classList.toggle('text-primary');
+          nextBtn.classList.toggle('disabled');
+        }
+      });
+  });
+</script>
+{% endblock %}
