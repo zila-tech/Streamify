@@ -9,7 +9,8 @@ from django.views.generic import CreateView, View, FormView, TemplateView
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
-from .mixins import CustomPermissionMixin
+
+from accounts.mixins import ActiveUserRequiredMixin
 from .utils import MailUtils
 from .forms import LoginForm, RegistrationForm, SetPasswordForm, UpdateAccountForm
 from .models import Account
@@ -114,7 +115,7 @@ class LoginView(FormView):
 loginview = LoginView.as_view()
 
 
-class LogoutView(CustomPermissionMixin, View):
+class LogoutView(ActiveUserRequiredMixin, View):
     def get(self, request):
         auth.logout(request)
         messages.success(request, _("You are logged out."))
@@ -187,7 +188,8 @@ class PasswordResetCompleteView(TemplateView):
 
 passwordresetcompleteview = PasswordResetCompleteView.as_view()
 
-class UpdateAccountView(View):
+
+class UpdateAccountView(ActiveUserRequiredMixin, View):
     template_name = "accounts/profile.html"
 
     def get(self, request, *args, **kwargs):
@@ -230,5 +232,6 @@ class UpdateAccountView(View):
             "title_root": "Profile",
         }
         return context
+
 
 updateaccountview = UpdateAccountView.as_view()
