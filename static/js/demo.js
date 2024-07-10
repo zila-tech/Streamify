@@ -1,7 +1,5 @@
 //[Preview Menu Javascript]
 
-//Project:	edulearn - Responsive Admin Template
-//Primary use:   This file is for demo purposes only.
 
 $(function () {
   'use strict'
@@ -42,7 +40,7 @@ $(function () {
     if (typeof (Storage) !== 'undefined') {
       return localStorage.getItem(name)
     } else {
-      window.alert('Please use a modern browser to properly view this template!')
+      window.alert('Please use a modern browser to properly view this project!')
     }
   }
 
@@ -57,7 +55,7 @@ $(function () {
     if (typeof (Storage) !== 'undefined') {
       localStorage.setItem(name, val)
     } else {
-      window.alert('Please use a modern browser to properly view this template!')
+      window.alert('Please use a modern browser to properly view this project!')
     }
   }
 
@@ -92,80 +90,84 @@ $(function () {
   }
 
   /**
-   * Retrieve default settings and apply them to the template
+   * Retrieve default settings and apply them to the project
    *
    * @returns void
    */
   function setup() {
-    var tmp = get('theme')
-    if (tmp && $.inArray(tmp, mySkins))
-      changeSkin(tmp)
+    var tmp = get('theme');
+    if (tmp && $.inArray(tmp, mySkins)) changeSkin(tmp);
 
     // Add the change skin listener
     $('[data-theme]').on('click', function (e) {
-      if ($(this).hasClass('knob'))
-        return
-      e.preventDefault()
-      changeSkin($(this).data('theme'))
-    })
+      if ($(this).hasClass('knob')) return;
+      e.preventDefault();
+      changeSkin($(this).data('theme'));
+    });
 
     // Add the layout manager
     $('[data-layout]').on('click', function () {
-      changeLayout($(this).data('layout'))
-    })
+      changeLayout($(this).data('layout'));
+    });
 
     $('[data-controlsidebar]').on('click', function () {
-      changeLayout($(this).data('controlsidebar'))
-      var slide = !$controlSidebar.options.slide
+      changeLayout($(this).data('controlsidebar'));
+      var slide = !$controlSidebar.options.slide;
 
-      $controlSidebar.options.slide = slide
-      if (!slide)
-        $('.control-sidebar').removeClass('control-sidebar-open')
-    })
-
+      $controlSidebar.options.slide = slide;
+      if (!slide) $('.control-sidebar').removeClass('control-sidebar-open');
+    });
 
     $('[data-enable="expandOnHover"]').on('click', function () {
-      $(this).attr('disabled', true)
-      $pushMenu.expandOnHover()
+      $(this).attr('disabled', true);
+      $pushMenu.expandOnHover();
       if (!$('body').hasClass('sidebar-collapse'))
-        $('[data-layout="sidebar-collapse"]').click()
-    })
+        $('[data-layout="sidebar-collapse"]').click();
+    });
 
     $('[data-enable="rtl"]').on('click', function () {
-      $(this).attr('disabled', true)
-      $pushMenu.expandOnHover()
-      if (!$('body').hasClass('rtl'))
-        $('[data-layout="rtl"]').click()
-    })
+      $(this).attr('disabled', true);
+      $pushMenu.expandOnHover();
+      if (!$('body').hasClass('rtl')) $('[data-layout="rtl"]').click();
+    });
 
     $('[data-mainsidebarskin="toggle"]').on('click', function () {
-      var $sidebar = $('body')
+      var $sidebar = $('body');
       if ($sidebar.hasClass('dark-skin')) {
-        $sidebar.removeClass('dark-skin')
-        $sidebar.addClass('light-skin')
+        $sidebar.removeClass('dark-skin');
+        $sidebar.addClass('light-skin');
+        store('theme-skin', 'light-skin');
       } else {
-        $sidebar.removeClass('light-skin')
-        $sidebar.addClass('dark-skin')
+        $sidebar.removeClass('light-skin');
+        $sidebar.addClass('dark-skin');
+        store('theme-skin', 'dark-skin');
       }
-    })
+    });
+
+    // Retrieve the stored sidebar skin setting
+    var skin = get('theme-skin');
+    if (skin) {
+      $('body').removeClass('dark-skin light-skin').addClass(skin);
+    } else {
+      $('body').addClass('light-skin'); // Default to light skin
+    }
 
     //  Reset options
     if ($('body').hasClass('fixed')) {
-      $('[data-layout="fixed"]').attr('checked', 'checked')
+      $('[data-layout="fixed"]').attr('checked', 'checked');
     }
     if ($('body').hasClass('layout-boxed')) {
-      $('[data-layout="layout-boxed"]').attr('checked', 'checked')
+      $('[data-layout="layout-boxed"]').attr('checked', 'checked');
     }
     if ($('body').hasClass('sidebar-collapse')) {
-      $('[data-layout="sidebar-collapse"]').attr('checked', 'checked')
+      $('[data-layout="sidebar-collapse"]').attr('checked', 'checked');
     }
     if ($('body').hasClass('rtl')) {
-      $('[data-layout="rtl"]').attr('checked', 'checked')
+      $('[data-layout="rtl"]').attr('checked', 'checked');
     }
-   // if ($('body').hasClass('dark')) {
-//      $('[data-layout="dark"]').attr('checked', 'checked')
-//    }
-
+    if ($('body').hasClass('dark')) {
+      $('[data-layout="dark"]').attr('checked', 'checked');
+    }
   }
 
   // Create the new tab
@@ -176,7 +178,7 @@ $(function () {
 
   // Create the tab button
   var $tabButton = $('<li />', { 'class': 'nav-item' })
-    .html('<a href=\'#control-sidebar-theme-demo-options-tab\' class=\'active\' data-bs-toggle=\'tab\' title=\'Setting\'>'
+    .html('<a hr ef=\'#control-sidebar-theme-demo-options-tab\' class=\'active\' data-bs-toggle=\'tab\' title=\'Setting\'>'
       + '<i class="mdi mdi-settings"></i>'
       + '</a>')
 
