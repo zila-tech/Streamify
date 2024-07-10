@@ -1,15 +1,21 @@
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views import View
+
+from accounts.mixins import ActiveUserRequiredMixin
+
+from .filters import VideoFilter
 from .models import Video
 from django.views.generic import ListView, DetailView
 from django.shortcuts import get_object_or_404
 from .models import Video
 from .forms import VideoForm
 from django.contrib import messages
+from django_filters.views import FilterView
 
 
-class VideoListView(ListView):
+class VideoListView(ActiveUserRequiredMixin,FilterView):
+    filterset_class = VideoFilter
     model = Video
     template_name = "videos/home.html"
     context_object_name = "videos"
@@ -25,7 +31,8 @@ class VideoListView(ListView):
 home = VideoListView.as_view()
 
 
-class Videos(ListView):
+class Videos(ActiveUserRequiredMixin,FilterView):
+    filterset_class = VideoFilter
     model = Video
     template_name = "videos/videos_list.html"
     context_object_name = "videos"
@@ -41,7 +48,7 @@ class Videos(ListView):
 videos = Videos.as_view()
 
 
-class AddOrUpdateVideoView(View):
+class AddOrUpdateVideoView(ActiveUserRequiredMixin, View):
     form_class = VideoForm
 
     def post(self, request, *args, **kwargs):
@@ -49,23 +56,28 @@ class AddOrUpdateVideoView(View):
         if video_id:
             video = get_object_or_404(Video, id=video_id)
             form = self.form_class(request.POST, request.FILES, instance=video)
+            msg = "updated"
         else:
             form = self.form_class(request.POST, request.FILES)
+            msg = "created"
 
         if form.is_valid():
             video = form.save(commit=False)
             if not video_id:
                 video.created_by = request.user
             video.save()
+            messages.success(request, f"Video {msg} successfully.")
             return JsonResponse({"success": True})
         else:
+            for error in form.errors:
+                messages.error(request, f"Error {error}")
             return JsonResponse({"success": False, "errors": form.errors}, status=400)
 
 
 addorupdatevideoview = AddOrUpdateVideoView.as_view()
 
 
-class GetVideoView(View):
+class GetVideoView(ActiveUserRequiredMixin, View):
     def get(self, request, video_id, *args, **kwargs):
         video = get_object_or_404(Video, id=video_id)
         data = {
@@ -79,7 +91,7 @@ class GetVideoView(View):
 getvideoview = GetVideoView.as_view()
 
 
-class DeleteVideoView(View):
+class DeleteVideoView(ActiveUserRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         video_id = request.POST.get("video_id")
         video = get_object_or_404(Video, id=video_id)
@@ -90,7 +102,9 @@ class DeleteVideoView(View):
 
 deletevideoview = DeleteVideoView.as_view()
 
-class VideoDetailView(ListView):
+
+class VideoDetailView(ActiveUserRequiredMixin, FilterView):
+    filterset_class = VideoFilter
     model = Video
     template_name = "videos/video-details.html"
     context_object_name = "videos"
@@ -117,7 +131,7 @@ class VideoDetailView(ListView):
 videodetailview = VideoDetailView.as_view()
 
 
-class GetPrevNextIDsView(View):
+class GetPrevNextIDsView(ActiveUserRequiredMixin, View):
     def get(self, request, pk):
         video = get_object_or_404(Video, pk=pk)
         all_videos = Video.objects.order_by("-date_posted")
@@ -140,6 +154,3 @@ class GetPrevNextIDsView(View):
 
 
 getprevnextidsview = GetPrevNextIDsView.as_view()
-# def home(request):
-# return render(request, "videos/home.html")
-# return render(request, "videos/video-details.html")
