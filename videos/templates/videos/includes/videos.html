@@ -34,7 +34,7 @@
               </div>
             </div>
             <div class="fx-card-content">
-              <h3 class="box-title">{{ video.title.title }}</h3>
+              <h3 class="box-title">{{ video.title.title|truncatewords:4 }}</h3>
               <small>{{ video.description|truncatewords:4 }}</small> <br />
             </div>
           </div>
