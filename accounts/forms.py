@@ -168,3 +168,20 @@ class SetPasswordForm(AuthSetPasswordForm):
             }
         ),
     )
+
+
+class UpdateAccountForm(forms.ModelForm):
+    class Meta:
+        model = Account
+        fields = (
+            "username",
+            "first_name",
+            "last_name",
+            "gender",
+        )
+        widgets = {
+            "username": forms.TextInput(attrs={"class": "form-control"}),
+            "first_name": forms.TextInput(attrs={"class": "form-control"}),
+            "last_name": forms.TextInput(attrs={"class": "form-control"}),
+            "gender": forms.Select(attrs={"class": "form-select ps-15 bg-transparent"}),
+        }
