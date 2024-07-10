@@ -7,6 +7,7 @@ from .views import (
     forgotpasswordview,
     passwordresetcompleteview,
     passwordresetconfirmview,
+    updateaccountview,
 )
 
 
@@ -26,5 +27,10 @@ urlpatterns = [
         "reset-password-complete/",
         passwordresetcompleteview,
         name="password_reset_complete",
+    ),
+    path(
+        "profile/",
+        updateaccountview,
+        name="profile",
     ),
 ]
