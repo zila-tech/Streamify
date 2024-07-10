@@ -1,0 +1,72 @@
+<script>
+        let videoIdToDelete = null;
+        function confirmDelete(videoId) {
+        videoIdToDelete = videoId;
+        }
+        function deleteVideo() {
+            url = "{% url 'delete_video' %}"
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: {
+                video_id: videoIdToDelete,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function (data) {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    showToast("Success", data.message, "success");
+                }
+                },
+                error: function (xhr, status, error) {
+                var jsonResponse = JSON.parse(xhr.responseText);
+                var errors = xhr.responseJSON.errors;
+                showToast("Error", jsonResponse.error, "error");
+                }
+            });
+        }
+        function openModal(videoId = null) {
+            url = "{% url 'get_video' 1 %}".replace('1',videoId)
+        if (videoId) {
+            $.ajax({
+            url: url,
+            method: 'GET',
+            success: function(data) {
+                $('#videoModalLabel').text('Edit Video');
+                $('#videoId').val(data.id);
+                $('#title').val(data.title);
+                $('#description').val(data.description);
+            },
+            error: function(xhr) {
+                showToast("Error", 'Error fetching video details', "error");
+            }
+            });
+        } else {
+            $('#videoModalLabel').text('Add New Video');
+            $('#videoId').val('');
+            $('#videoForm')[0].reset();
+        }
+        }
+        $(document).ready(function() {
+        $('#videoForm').on('submit', function(e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            var videoId = $('#videoId').val();
+            url_1 = "{% url 'update_video' 1 %}".replace('1',videoId)
+            url_2 = "{% url 'add_video' %}"
+            $.ajax({
+            type: 'POST',
+            url: videoId ? url_1 : url_2,
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                location.reload(); 
+            },
+            error: function(xhr) {
+            }
+            });
+        });
+        });
+    </script>
