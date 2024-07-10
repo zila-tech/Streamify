@@ -1,21 +1,16 @@
-from .decorators import custom_permission_required
+from django.contrib.auth.mixins import AccessMixin
+from django.contrib.auth import logout
+from django.shortcuts import redirect
+from django.contrib import messages
 
-
-class CustomPermissionMixin:
-    """
-    Custom mixin for handling class-based views
-    """
+class ActiveUserRequiredMixin(AccessMixin):
+    """Verify that the current user is authenticated and active."""
 
     def dispatch(self, request, *args, **kwargs):
-        permissions = getattr(self, "required_permissions", [])
-        isjson = getattr(self, "isjson", False)
-        message = getattr(self, "permission_denied_message", None)
-        check_staff = getattr(self, "check_staff", False)
-        user_type_decorator = custom_permission_required(
-            permissions,
-            message,
-            isjson,
-            check_staff=check_staff,
-        )
-        decorated = user_type_decorator(super().dispatch)
-        return decorated(request, *args, **kwargs)
+        if not request.user.is_authenticated or not request.user.is_active:
+            logout(request)
+            messages.error(request, "Please log in to access this page.")
+            return redirect("auth:login")
+        return super().dispatch(request, *args, **kwargs)
+
+
