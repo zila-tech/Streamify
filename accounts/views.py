@@ -11,14 +11,14 @@ from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 from .mixins import CustomPermissionMixin
 from .utils import MailUtils
-from .forms import LoginForm, RegistrationForm, SetPasswordForm
+from .forms import LoginForm, RegistrationForm, SetPasswordForm, UpdateAccountForm
 from .models import Account
 from django.contrib import auth
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import Group
 from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
-
+from django.contrib.auth import update_session_auth_hash
 
 class UserRegistrationView(MailUtils, CreateView):
     model = Account
@@ -186,3 +186,49 @@ class PasswordResetCompleteView(TemplateView):
 
 
 passwordresetcompleteview = PasswordResetCompleteView.as_view()
+
+class UpdateAccountView(View):
+    template_name = "accounts/profile.html"
+
+    def get(self, request, *args, **kwargs):
+        user = get_object_or_404(Account, pk=request.user.pk)
+        context = self.getContext(user)
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        user = get_object_or_404(Account, pk=request.user.pk)
+
+        try:
+            if "update_profile" in request.POST:
+                form = UpdateAccountForm(request.POST, instance=user)
+                form_type = "profile"
+            elif "change_password" in request.POST:
+                form = SetPasswordForm(user=user, data=request.POST)
+                form_type = "password"
+
+            if form.is_valid():
+                form.save()
+                if form_type == "password":
+                    update_session_auth_hash(request, form.user)
+                return redirect("auth:profile")
+            else:
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        messages.error(self.request, f"{field}: {error}")
+        except:
+            messages.error(request, "Invalid form submission.")
+
+        context = self.getContext(user)
+        return render(request, self.template_name, context)
+
+    def getContext(self, user):
+        update_form = UpdateAccountForm(instance=user)
+        password_form = SetPasswordForm(user=user)
+        context = {
+            "update_form": update_form,
+            "password_form": password_form,
+            "title_root": "Profile",
+        }
+        return context
+
+updateaccountview = UpdateAccountView.as_view()
