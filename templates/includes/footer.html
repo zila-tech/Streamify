@@ -1,22 +1,63 @@
-<footer class="main-footer">
-  <div class="pull-right d-none d-sm-inline-block">
-    <ul
-      class="nav nav-primary nav-dotted nav-dot-separated justify-content-center justify-content-md-end"
-    >
-      <li class="nav-item">
-        <a
-          class="nav-link"
-          href="https://preview.themeforest.net/item/investx-investment-portfolio-admin-dashboardtemplate/full_screen_preview/35421349?_ga=2.228322970.606548471.1654681866-424681648.1636358172"
-          target="_blank"
-          >Purchase Now</a
-        >
-      </li>
-    </ul>
+<footer class="footer pt-5 pb-4">
+  <div class="container text-center text-md-start">
+    <div class="row text-center text-md-start">
+      <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
+        <h5 class="text-uppercase mb-4 font-weight-bold text-primary">Streamify</h5>
+        <p>Streamify is your ultimate video streaming platform offering a wide range of videos across various genres and interests. Stay tuned and enjoy your favorite content!</p>
+      </div>
+
+      <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
+        <h5 class="text-uppercase mb-4 font-weight-bold text-primary">Quick Links</h5>
+        <p><a onclick="navigateToUrl(this)"
+                data-url="{% url 'home' %}"
+                href="javascript:void(0);" style="text-decoration: none;">Home</a></p>
+        <p><a href="#" style="text-decoration: none;">About Us</a></p>
+        <p><a href="#" style="text-decoration: none;">Videos</a></p>
+        <p><a href="#" style="text-decoration: none;">Contact Us</a></p>
+      </div>
+
+      <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
+        <h5 class="text-uppercase mb-4 font-weight-bold text-primary">Useful Links</h5>
+        <p><a onclick="navigateToUrl(this)"
+                data-url="{% url 'auth:profile' %}"
+                href="javascript:void(0);" style="text-decoration: none;">Your Account</a></p>
+        <p><a href="#" style="text-decoration: none;">Become an Affiliate</a></p>
+        <p><a href="#" style="text-decoration: none;">Privacy Policy</a></p>
+        <p><a href="#" style="text-decoration: none;">Help</a></p>
+      </div>
+
+      <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
+        <h5 class="text-uppercase mb-4 font-weight-bold text-primary">Contact</h5>
+        <p><i class="fa fa-home mr-3"></i> 123 Main St, Paraku, GHANA</p>
+        <p><i class="fa fa-envelope mr-3"></i> info@streamify.com</p>
+        <p><i class="fa fa-phone mr-3"></i> +1 234 567 890</p>
+        <p><i class="fa fa-print mr-3"></i> +1 234 567 891</p>
+      </div>
+    </div>
+
+    <div class="row align-items-center">
+      <div class="col-md-7 col-lg-8">
+        <p class="text-center text-md-start">&copy; {% now 'Y' %} All rights reserved by <a href="#" class="text-primary" style="text-decoration: none;"><strong>Streamify</strong></a></p>
+      </div>
+
+      <div class="col-md-5 col-lg-4">
+        <div class="text-center text-md-end">
+          <ul class="list-unstyled list-inline">
+            <li class="list-inline-item">
+              <a href="#" class="btn-floating btn-sm  fs-4"><i class="fa fa-facebook"></i></a>
+            </li>
+            <li class="list-inline-item">
+              <a href="#" class="btn-floating btn-sm fs-4"><i class="fa fa-twitter"></i></a>
+            </li>
+            <li class="list-inline-item">
+              <a href="#" class="btn-floating btn-sm fs-4"><i class="fa fa-google-plus"></i></a>
+            </li>
+            <li class="list-inline-item">
+              <a href="#" class="btn-floating btn-sm fs-4"><i class="fa fa-linkedin"></i></a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
-  &copy;
-  <script>
-    document.write(new Date().getFullYear());
-  </script>
-  <a href="https://www.multipurposethemes.com/">Multipurpose Themes</a>. All
-  Rights Reserved.
 </footer>
