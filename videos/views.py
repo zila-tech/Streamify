@@ -5,12 +5,13 @@ from .models import Video
 from django.views.generic import ListView, DetailView
 from django.shortcuts import get_object_or_404
 from .models import Video
+from .forms import VideoForm
+from django.contrib import messages
 
 
 class VideoListView(ListView):
     model = Video
     template_name = "videos/home.html"
-    # template_name = "videos/video-details.html"
     context_object_name = "videos"
     ordering = ["-date_posted"]
     paginate_by = 9
@@ -23,6 +24,71 @@ class VideoListView(ListView):
 
 home = VideoListView.as_view()
 
+
+class Videos(ListView):
+    model = Video
+    template_name = "videos/videos_list.html"
+    context_object_name = "videos"
+    ordering = ["-date_posted"]
+    paginate_by = 5
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title_root"] = "Videos"
+        return context
+
+
+videos = Videos.as_view()
+
+
+class AddOrUpdateVideoView(View):
+    form_class = VideoForm
+
+    def post(self, request, *args, **kwargs):
+        video_id = request.POST.get("video_id")
+        if video_id:
+            video = get_object_or_404(Video, id=video_id)
+            form = self.form_class(request.POST, request.FILES, instance=video)
+        else:
+            form = self.form_class(request.POST, request.FILES)
+
+        if form.is_valid():
+            video = form.save(commit=False)
+            if not video_id:
+                video.created_by = request.user
+            video.save()
+            return JsonResponse({"success": True})
+        else:
+            return JsonResponse({"success": False, "errors": form.errors}, status=400)
+
+
+addorupdatevideoview = AddOrUpdateVideoView.as_view()
+
+
+class GetVideoView(View):
+    def get(self, request, video_id, *args, **kwargs):
+        video = get_object_or_404(Video, id=video_id)
+        data = {
+            "id": video.id,
+            "title": video.title,
+            "description": video.description,
+        }
+        return JsonResponse(data)
+
+
+getvideoview = GetVideoView.as_view()
+
+
+class DeleteVideoView(View):
+    def post(self, request, *args, **kwargs):
+        video_id = request.POST.get("video_id")
+        video = get_object_or_404(Video, id=video_id)
+        video.delete()
+        messages.success(request, "Video deleted successfully.")
+        return JsonResponse({"success": True, "message": "Video deleted successfully."})
+
+
+deletevideoview = DeleteVideoView.as_view()
 
 class VideoDetailView(ListView):
     model = Video
