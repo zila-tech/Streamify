@@ -8,7 +8,7 @@ from django.contrib.auth.models import (
     Group,
     Permission,
 )
-from django.db.models.functions import Now, Concat
+from django.db.models.functions import Now
 from django.utils.translation import gettext_lazy as _
 
 
@@ -94,10 +94,6 @@ class Account(AbstractBaseUser):
 
     def has_module_perms(self, app_label):
         return True
-
-    def get_user_type(self):
-        if self.is_accountant:
-            return "accountant"
 
     @property
     def is_superuser(self):
