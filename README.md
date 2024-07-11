@@ -26,6 +26,10 @@ Streamify is a video streaming platform built with Django. It includes features 
 - Language support for multiple languages
 - Custom video player with control box
 
+## Deployment
+
+The application is deployed at: [Streamify](https://streamify.pythonanywhere.com/)
+
 ## Technologies Used
 
 - **Backend:** Django
@@ -35,6 +39,15 @@ Streamify is a video streaming platform built with Django. It includes features 
 - **Version Control:** Git, GitHub
 
 ## Installation
+
+Follow these steps to set up the project locally:
+
+1. Clone the repository
+2. Install dependencies
+3. Set up the database
+4. Run the development server
+5. Sign up
+6. Activate account from mail spam, remove from spam
 
 ### Prerequisites
 
