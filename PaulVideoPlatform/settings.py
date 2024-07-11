@@ -76,6 +76,16 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+# DATABASES = {
+#     "default": {
+#         "ENGINE": env("DATABASE_ENGINE"),
+#         "NAME": env("DATABASE_NAME"),
+#         "USER": env("DATABASE_USER"),
+#         "PASSWORD": env("DATABASE_PASSWORD"),
+#         "HOST": env("DATABASE_HOST"),
+#         "PORT": env("DATABASE_PORT"),
+#     }
+# }
 
 
 # Password validation
@@ -112,6 +122,7 @@ AUTH_USER_MODEL = "accounts.Account"
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles_build" / "static"
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
 # Media files (Uploaded files)
