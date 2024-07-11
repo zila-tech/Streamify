@@ -11,9 +11,9 @@ from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 
 from accounts.mixins import ActiveUserRequiredMixin
-from .utils import MailUtils
-from .forms import LoginForm, RegistrationForm, SetPasswordForm, UpdateAccountForm
-from .models import Account
+from accounts.utils import MailUtils
+from accounts.forms import LoginForm, RegistrationForm, SetPasswordForm, UpdateAccountForm
+from accounts.models import Account
 from django.contrib import auth
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import Group

@@ -4,12 +4,12 @@ from django.views import View
 
 from accounts.mixins import ActiveUserRequiredMixin
 
-from .filters import VideoFilter
-from .models import Video
+from videos.filters import VideoFilter
+from videos.models import Video
 from django.views.generic import ListView, DetailView
 from django.shortcuts import get_object_or_404
-from .models import Video
-from .forms import VideoForm
+from videos.models import Video
+from videos.forms import VideoForm
 from django.contrib import messages
 from django_filters.views import FilterView
 

@@ -2,7 +2,7 @@ import os
 from django.db.models.signals import pre_delete, pre_save
 from django.dispatch import receiver
 from django.conf import settings
-from .models import Video
+from videos.models import Video
 
 
 @receiver(pre_delete, sender=Video)
