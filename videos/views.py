@@ -109,7 +109,7 @@ class VideoDetailView(ActiveUserRequiredMixin, FilterView):
     template_name = "videos/video-details.html"
     context_object_name = "videos"
     ordering = ["-date_posted"]
-    paginate_by = 9
+    paginate_by = 3
 
     def get_single_object(self):
         # Fetch the video using the primary key from the URL
