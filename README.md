@@ -2,10 +2,6 @@
 
 Streamify is a video streaming platform built with Django. It includes features such as user authentication, video navigation, video sharing, and an admin interface for uploading videos. The platform is designed to be responsive and visually appealing, with support for multiple themes and user customization.
 
-## Entity-Relationship Diagram
-
-![ER Diagram](static/images/er_diagram.png)
-
 ## Table of Contents
 
 - [Features](#features)
@@ -54,7 +50,6 @@ Streamify is a video streaming platform built with Django. It includes features 
 git clone https://github.com/zila-tech/Streamify.git
 cd Streamify
 ```
-                  
 
 ### Install Dependencies
 
@@ -64,7 +59,6 @@ cd Streamify
 
 - python manage.py makemigrations
 - python manage.py migrate
-
 
 ### Create Superuser
 
@@ -88,7 +82,6 @@ cd Streamify
 - Video Sharing
 - Share video links via email with your friends.
 
-
 # Admin Interface
 
 - Log in as an admin or staff to upload new videos and manage existing ones.
@@ -103,8 +96,11 @@ cd Streamify
 
 # Database Design
 
-- ER Diagram
+- Entity-Relationship Diagram
+
+![ER Diagram](static/images/er_diagram.png)
 
 # Contact
+
 - Email: info.streamify.pvp@gmail.com
 - GitHub: zila-tech
