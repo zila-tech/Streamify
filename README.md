@@ -47,7 +47,7 @@ Streamify is a video streaming platform built with Django. It includes features 
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/Streamify.git
+git clone https://github.com/zila-tech/Streamify.git
 cd Streamify
 ```
                   
