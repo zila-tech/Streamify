@@ -12,14 +12,19 @@ from django.utils.translation import gettext_lazy as _
 
 from accounts.mixins import ActiveUserRequiredMixin
 from accounts.utils import MailUtils
-from accounts.forms import LoginForm, RegistrationForm, SetPasswordForm, UpdateAccountForm
+from accounts.forms import (
+    LoginForm,
+    RegistrationForm,
+    SetPasswordForm,
+    UpdateAccountForm,
+)
 from accounts.models import Account
 from django.contrib import auth
 from django.contrib.auth.hashers import make_password
-from django.contrib.auth.models import Group
 from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth import update_session_auth_hash
+
 
 class UserRegistrationView(MailUtils, CreateView):
     model = Account
@@ -31,14 +36,10 @@ class UserRegistrationView(MailUtils, CreateView):
         user = form.save(commit=False)
         user.is_active = False
         password = form.cleaned_data.get("password")
+        email = form.cleaned_data.get("email")
+        user.username = str(email.split("@")[0])
         user.password = make_password(password)
         user.save()
-
-        group, created = Group.objects.get_or_create(name="Users")
-        if created:
-            group.save()
-
-        user.groups.add(group)
 
         # Send activation email
         mail_temp = "accounts/account_verification_email.html"
@@ -59,6 +60,11 @@ class UserRegistrationView(MailUtils, CreateView):
             for error in errors:
                 messages.error(self.request, _(f"{field}: {error}"))
         return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title_root"] = "Sign Up"
+        return context
 
 
 userregistrationview = UserRegistrationView.as_view()
