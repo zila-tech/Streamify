@@ -114,6 +114,7 @@ ENV/
 *.sqlite3
 *.json
 *.txt
+db.sqlite3
 debug.log
 help/
 # Ignore debug logs

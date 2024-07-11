@@ -2,6 +2,10 @@
 
 Streamify is a video streaming platform built with Django. It includes features such as user authentication, video navigation, video sharing, and an admin interface for uploading videos. The platform is designed to be responsive and visually appealing, with support for multiple themes and user customization.
 
+## Entity-Relationship Diagram
+
+![ER Diagram](static/images/er_diagram.png)
+
 ## Table of Contents
 
 - [Features](#features)
