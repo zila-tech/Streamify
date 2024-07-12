@@ -1,0 +1,194 @@
+<script>
+  const videoPlayer = document.getElementById('videoPlayer');
+  const playPauseBtn = document.getElementById('playPauseBtn');
+  const seeker = document.getElementById('seeker');
+  const volumeBtn = document.getElementById('volumeBtn');
+  const fullScreenBtn = document.getElementById('fullScreenBtn');
+  const restartBtn = document.getElementById('restartBtn');
+  const shareBtn = document.getElementById('share');
+  const detailCard = document.getSelection('.card-header');
+  const timeStampEl = document.getElementById('timestamp');
+  const currentVideoId = '{{ video.id }}';
+  
+
+  document.querySelector('.card-header').addEventListener('click', function () {
+    this.querySelector('.fa').classList.toggle('fa-chevron-down');
+    this.querySelector('.fa').classList.toggle('fa-chevron-up');
+  });
+
+  shareBtn.addEventListener('click', function () {
+    var shareModal = new bootstrap.Modal(document.getElementById('shareModal'));
+    shareModal.show();
+  });
+
+  document.getElementById('copyBtn').addEventListener('click', function () {
+    var copyText = document.getElementById('shareUrl');
+    copyText.select();
+    document.execCommand('copy');
+    showToast("Info", "URL copied to clipboard!", "info");
+  });
+
+  const videoUrl = '{{ request.build_absolute_uri }}';
+  
+  document.getElementById('facebookShare').addEventListener('click', function() {
+    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(videoUrl)}`;
+    window.open(url, '_blank', 'width=600,height=400');
+  });
+
+  document.getElementById('twitterShare').addEventListener('click', function() {
+    const url = `https://twitter.com/intent/tweet?url=${encodeURIComponent(videoUrl)}&text=Check%20out%20this%20video`;
+    window.open(url, '_blank', 'width=600,height=400');
+  });
+
+  document.getElementById('googlePlusShare').addEventListener('click', function() {
+    const url = `https://plus.google.com/share?url=${encodeURIComponent(videoUrl)}`;
+    window.open(url, '_blank', 'width=600,height=400');
+  });
+
+  document.getElementById('linkedinShare').addEventListener('click', function() {
+    const url = `https://www.linkedin.com/shareArticle?url=${encodeURIComponent(videoUrl)}`;
+    window.open(url, '_blank', 'width=600,height=400');
+  });
+
+  // Hide default controls
+  videoPlayer.controls = false;
+  let clickCount = 0;
+  let singleClickTimer;
+
+  function pauseFuc(params) {
+    videoPlayer.pause();
+    playPauseBtn.classList.remove('fa-pause');
+    playPauseBtn.classList.add('fa-play');
+    playPauseBtn.title = 'Play';
+  }
+  function playPauseFunc() {
+    if (videoPlayer.paused) {
+      videoPlayer.play();
+      playPauseBtn.classList.remove('fa-play');
+      playPauseBtn.classList.add('fa-pause');
+      playPauseBtn.title = 'Pause';
+    } else {
+      pauseFuc()
+    }
+  }
+
+  function updateTime() {
+    let mins = Math.floor(videoPlayer.currentTime / 60);
+        if (mins < 10) mins = '0' + mins;
+        let secs = Math.floor(videoPlayer.currentTime % 60);
+        if (secs < 10) secs = '0' + secs;
+        timeStampEl.innerHTML = `${mins}:${secs}`;
+  }
+
+  playPauseBtn.addEventListener('click', () => {
+    playPauseFunc();
+  });
+
+  // Adjust volume on slider change
+  volumeSlider.addEventListener('input', () => {
+    videoPlayer.volume = volumeSlider.value;
+    if (videoPlayer.volume === 0) {
+      videoPlayer.muted = true;
+      volumeBtn.classList.remove('fa-volume-up');
+      volumeBtn.classList.add('fa-volume-off');
+    } else {
+      videoPlayer.muted = false;
+      volumeBtn.classList.remove('fa-volume-off');
+      volumeBtn.classList.add('fa-volume-up');
+    }
+  });
+
+  videoPlayer.addEventListener('timeupdate', () => {
+    seeker.value = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+    updateTime()
+  });
+
+  videoPlayer.addEventListener('ended', function() {
+    pauseFuc()
+  });
+
+  seeker.addEventListener('input', () => {
+    videoPlayer.currentTime = (seeker.value / 100) * videoPlayer.duration;
+  });
+
+  volumeBtn.addEventListener('click', () => {
+    if (videoPlayer.muted) {
+      videoPlayer.muted = false;
+      volumeBtn.classList.remove('fa-volume-off');
+      volumeBtn.classList.add('fa-volume-up');
+      volumeBtn.title = 'Mute';
+    } else {
+      videoPlayer.muted = true;
+      volumeBtn.classList.remove('fa-volume-up');
+      volumeBtn.classList.add('fa-volume-off');
+      volumeBtn.title = 'Unmute';
+    }
+  });
+
+  // Event listener for double click
+  videoPlayer.addEventListener('click', () => {
+    clickCount++;
+
+    if (clickCount === 1) {
+      // Set a timer to reset click count after 300ms
+      singleClickTimer = setTimeout(() => {
+        clickCount = 0;
+      }, 300);
+    } else if (clickCount === 2) {
+      clearTimeout(singleClickTimer);
+      playPauseFunc();
+      clickCount = 0;
+    }
+  });
+
+  fullScreenBtn.addEventListener('click', () => {
+    if (videoPlayer.requestFullscreen) {
+      videoPlayer.requestFullscreen();
+    } else if (videoPlayer.mozRequestFullScreen) {
+      videoPlayer.mozRequestFullScreen();
+    } else if (videoPlayer.webkitRequestFullscreen) {
+      videoPlayer.webkitRequestFullscreen();
+    } else if (videoPlayer.msRequestFullscreen) {
+      videoPlayer.msRequestFullscreen();
+    }
+  });
+
+  restartBtn.addEventListener('click', () => {
+    videoPlayer.currentTime = 0;
+    videoPlayer.play();
+    playPauseBtn.classList.remove('fa-play');
+    playPauseBtn.classList.add('fa-pause');
+  });
+
+  prevBtn.addEventListener('click', () => {
+    fetch(`/videos/get-prev-next-ids/${currentVideoId}/`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.prev_video_id) {
+          window.location.href = `{% url 'video-detail' 1 %}`.replace(
+            '1',
+            data.prev_video_id
+          );
+        } else {
+          prevBtn.classList.toggle('text-primary');
+          prevBtn.classList.toggle('disabled');
+        }
+      });
+  });
+
+  nextBtn.addEventListener('click', () => {
+    fetch(`/videos/get-prev-next-ids/${currentVideoId}/`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.next_video_id) {
+          window.location.href = `{% url 'video-detail' 1 %}`.replace(
+            '1',
+            data.next_video_id
+          );
+        } else {
+          nextBtn.classList.toggle('text-primary');
+          nextBtn.classList.toggle('disabled');
+        }
+      });
+  });
+</script>
