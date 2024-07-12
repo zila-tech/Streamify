@@ -22,7 +22,7 @@
                 error: function (xhr, status, error) {
                 var jsonResponse = JSON.parse(xhr.responseText);
                 var errors = xhr.responseJSON.errors;
-                showToast("Error", jsonResponse.error, "error");
+                showToast("Error", errors, "error");
                 }
             });
         }
