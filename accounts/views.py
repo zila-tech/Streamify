@@ -48,10 +48,7 @@ class UserRegistrationView(MailUtils, CreateView):
             self.request, user, mail_subject=mail_subject, mail_temp=mail_temp
         )
 
-        messages.success(
-            self.request,
-            _("Please confirm your email address to complete the registration."),
-        )
+        self.request.session["registration_success"] = True
 
         return redirect(self.success_url)
 
@@ -135,7 +132,7 @@ class ForgotPasswordView(MailUtils, View):
     template_name = "accounts/forgotPassword.html"
 
     def get(self, request):
-        return render(request, self.template_name)
+        return render(request, self.template_name,{"title_root":"Forgot Password"})
 
     def post(self, request):
         email = request.POST.get("email")
@@ -179,6 +176,11 @@ class PasswordResetConfirmView(AuthPasswordResetConfirmView):
                 messages.error(self.request, f"{field}: {error}")
         return super().form_invalid(form)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title_root"] = _("Reset Password")
+        return context
+
 
 passwordresetconfirmview = PasswordResetConfirmView.as_view()
 
@@ -188,7 +190,7 @@ class PasswordResetCompleteView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title_root"] = _("Password Reset Complete - Breast Cancer Prediction")
+        context["title_root"] = _("Password Reset Complete")
         return context
 
 
