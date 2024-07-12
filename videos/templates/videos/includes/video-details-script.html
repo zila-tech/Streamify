@@ -9,7 +9,18 @@
   const detailCard = document.getSelection('.card-header');
   const timeStampEl = document.getElementById('timestamp');
   const currentVideoId = '{{ video.id }}';
-  
+
+  function fullScreenFunc() {
+    if (videoPlayer.requestFullscreen) {
+      videoPlayer.requestFullscreen();
+    } else if (videoPlayer.mozRequestFullScreen) {
+      videoPlayer.mozRequestFullScreen();
+    } else if (videoPlayer.webkitRequestFullscreen) {
+      videoPlayer.webkitRequestFullscreen();
+    } else if (videoPlayer.msRequestFullscreen) {
+      videoPlayer.msRequestFullscreen();
+    }
+  }  
 
   document.querySelector('.card-header').addEventListener('click', function () {
     this.querySelector('.fa').classList.toggle('fa-chevron-down');
@@ -127,6 +138,7 @@
 
   // Event listener for double click
   videoPlayer.addEventListener('click', () => {
+    playPauseFunc();
     clickCount++;
 
     if (clickCount === 1) {
@@ -136,22 +148,12 @@
       }, 300);
     } else if (clickCount === 2) {
       clearTimeout(singleClickTimer);
-      playPauseFunc();
+      fullScreenFunc()
       clickCount = 0;
     }
   });
 
-  fullScreenBtn.addEventListener('click', () => {
-    if (videoPlayer.requestFullscreen) {
-      videoPlayer.requestFullscreen();
-    } else if (videoPlayer.mozRequestFullScreen) {
-      videoPlayer.mozRequestFullScreen();
-    } else if (videoPlayer.webkitRequestFullscreen) {
-      videoPlayer.webkitRequestFullscreen();
-    } else if (videoPlayer.msRequestFullscreen) {
-      videoPlayer.msRequestFullscreen();
-    }
-  });
+  fullScreenBtn.addEventListener('click',fullScreenFunc);
 
   restartBtn.addEventListener('click', () => {
     videoPlayer.currentTime = 0;
