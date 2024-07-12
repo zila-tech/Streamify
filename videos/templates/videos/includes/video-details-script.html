@@ -8,7 +8,9 @@
   const shareBtn = document.getElementById('share');
   const detailCard = document.getSelection('.card-header');
   const timeStampEl = document.getElementById('timestamp');
+  const totalTimeEl = document.getElementById('totalTime');
   const currentVideoId = '{{ video.id }}';
+   let isSeeking = false;
 
   function fullScreenFunc() {
     if (videoPlayer.requestFullscreen) {
@@ -81,14 +83,14 @@
     } else {
       pauseFuc()
     }
+    totalTimeEl.textContent = formatTime(videoPlayer.duration);
   }
 
-  function updateTime() {
-    let mins = Math.floor(videoPlayer.currentTime / 60);
-        if (mins < 10) mins = '0' + mins;
-        let secs = Math.floor(videoPlayer.currentTime % 60);
-        if (secs < 10) secs = '0' + secs;
-        timeStampEl.innerHTML = `${mins}:${secs}`;
+  // Format time in MM:SS
+  function formatTime(time) {
+    const mins = Math.floor(time / 60);
+    const secs = Math.floor(time % 60);
+    return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
   }
 
   playPauseBtn.addEventListener('click', () => {
@@ -110,8 +112,12 @@
   });
 
   videoPlayer.addEventListener('timeupdate', () => {
-    seeker.value = (videoPlayer.currentTime / videoPlayer.duration) * 100;
-    updateTime()
+    console.log("videoPlayer: ",(videoPlayer.currentTime / videoPlayer.duration) * 100)
+    if (!isSeeking) {
+      const value = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+      seeker.value = value;
+      timeStampEl.textContent=formatTime(videoPlayer.currentTime);
+    }
   });
 
   videoPlayer.addEventListener('ended', function() {
@@ -119,7 +125,15 @@
   });
 
   seeker.addEventListener('input', () => {
-    videoPlayer.currentTime = (seeker.value / 100) * videoPlayer.duration;
+    isSeeking = true;
+    const time = (seeker.value / 100) * videoPlayer.duration;
+    videoPlayer.currentTime = time;
+    timeStampEl.textContent = formatTime(videoPlayer.currentTime);
+  });
+
+  // Stop seeking once the input change is complete
+  seeker.addEventListener('change', () => {
+    isSeeking = false;
   });
 
   volumeBtn.addEventListener('click', () => {
@@ -153,7 +167,7 @@
     }
   });
 
-  fullScreenBtn.addEventListener('click',fullScreenFunc);
+  fullScreenBtn.addEventListener('click', fullScreenFunc);
 
   restartBtn.addEventListener('click', () => {
     videoPlayer.currentTime = 0;

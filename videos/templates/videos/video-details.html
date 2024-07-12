@@ -13,7 +13,20 @@
     color: grey !important;
     pointer-events: none; /* Prevent click events */
   }
-
+  .video-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+    .seeker-wrapper {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+    }
+    #seeker {
+      width: 100%;
+    }
 </style>
 
 <link
@@ -34,10 +47,12 @@
           <source src="{{ video.video_file.url }}" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
-        <div class="">
-
-          <input type="range" id="seeker" value="0" max="100" class="w-p90" />
-          <span id="timestamp">00:00</span>
+        <div class="video-controls">
+          <span id="timestamp" class="ms-3">00:00</span>
+          <div class="seeker-wrapper ms-3 me-3">
+            <input type="range" id="seeker" value="0" max="100">
+          </div>
+          <span id="totalTime" class="me-3">00:00</span>
         </div>
 
         <div class="card-footer justify-content-between d-flex flex-wrap">
