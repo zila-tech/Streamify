@@ -34,7 +34,11 @@
           <source src="{{ video.video_file.url }}" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
-        <input type="range" id="seeker" value="0" max="100" />
+        <div class="">
+
+          <input type="range" id="seeker" value="0" max="100" class="w-p90" />
+          <span id="timestamp">00:00</span>
+        </div>
 
         <div class="card-footer justify-content-between d-flex flex-wrap">
           <div
@@ -124,164 +128,34 @@
     </div>
   </div>
   {% include 'videos/includes/videos.html' %}
+  
+  <!-- Modal -->
+  <div class="modal fade" id="shareModal" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="shareModalLabel">Share Video</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="text-center">
+            <a href="javascript:void(0);" id="facebookShare" class="fa-3x me-3 text-primary"><i class="fa fa-facebook"></i></a>
+            <a href="javascript:void(0);" id="twitterShare" class="fa-3x me-3 text-info"><i class="fa fa-twitter"></i></a>
+            <a href="javascript:void(0);" id="googlePlusShare" class="fa-3x me-3 text-danger"><i class="fa fa-google-plus"></i></a>
+            <a href="javascript:void(0);" id="linkedinShare" class="fa-3x me-3 text-primary"><i class="fa fa-linkedin"></i></a>
+          </div>
+          <div class="input-group mt-3">
+            <input type="text" class="form-control" id="shareUrl" readonly value="{{ request.build_absolute_uri }}">
+            <button class="btn btn-outline-secondary" type="button" id="copyBtn">Copy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
 </div>
 
 <!--Videos-->
 {% endblock %} {% block scripts %}
-<script>
-  const videoPlayer = document.getElementById('videoPlayer');
-  const playPauseBtn = document.getElementById('playPauseBtn');
-  const seeker = document.getElementById('seeker');
-  const volumeBtn = document.getElementById('volumeBtn');
-  const fullScreenBtn = document.getElementById('fullScreenBtn');
-  const restartBtn = document.getElementById('restartBtn');
-  const shareBtn = document.getElementById('share');
-  const detailCard = document.getSelection('.card-header');
-  const currentVideoId = '{{ video.id }}';
-  
-
-  document.querySelector('.card-header').addEventListener('click', function () {
-    this.querySelector('.fa').classList.toggle('fa-chevron-down');
-    this.querySelector('.fa').classList.toggle('fa-chevron-up');
-  });
-  // Hide default controls
-  videoPlayer.controls = false;
-  let clickCount = 0;
-  let singleClickTimer;
-
-  function pauseFuc(params) {
-    videoPlayer.pause();
-    playPauseBtn.classList.remove('fa-pause');
-    playPauseBtn.classList.add('fa-play');
-    playPauseBtn.title = 'Play';
-  }
-  function playPauseFunc() {
-    if (videoPlayer.paused) {
-      videoPlayer.play();
-      playPauseBtn.classList.remove('fa-play');
-      playPauseBtn.classList.add('fa-pause');
-      playPauseBtn.title = 'Pause';
-    } else {
-      pauseFuc()
-    }
-  }
-
-  playPauseBtn.addEventListener('click', () => {
-    playPauseFunc();
-  });
-
-  // Adjust volume on slider change
-  volumeSlider.addEventListener('input', () => {
-    videoPlayer.volume = volumeSlider.value;
-    if (videoPlayer.volume === 0) {
-      videoPlayer.muted = true;
-      volumeBtn.classList.remove('fa-volume-up');
-      volumeBtn.classList.add('fa-volume-off');
-    } else {
-      videoPlayer.muted = false;
-      volumeBtn.classList.remove('fa-volume-off');
-      volumeBtn.classList.add('fa-volume-up');
-    }
-  });
-
-  videoPlayer.addEventListener('timeupdate', () => {
-    seeker.value = (videoPlayer.currentTime / videoPlayer.duration) * 100;
-  });
-
-  videoPlayer.addEventListener('ended', function() {
-    pauseFuc()
-  });
-
-  seeker.addEventListener('input', () => {
-    videoPlayer.currentTime = (seeker.value / 100) * videoPlayer.duration;
-  });
-
-  volumeBtn.addEventListener('click', () => {
-    if (videoPlayer.muted) {
-      videoPlayer.muted = false;
-      volumeBtn.classList.remove('fa-volume-off');
-      volumeBtn.classList.add('fa-volume-up');
-      volumeBtn.title = 'Mute';
-    } else {
-      videoPlayer.muted = true;
-      volumeBtn.classList.remove('fa-volume-up');
-      volumeBtn.classList.add('fa-volume-off');
-      volumeBtn.title = 'Unmute';
-    }
-  });
-
-  // Event listener for double click
-  videoPlayer.addEventListener('click', () => {
-    clickCount++;
-
-    if (clickCount === 1) {
-      // Set a timer to reset click count after 300ms
-      singleClickTimer = setTimeout(() => {
-        clickCount = 0;
-      }, 300);
-    } else if (clickCount === 2) {
-      clearTimeout(singleClickTimer);
-      playPauseFunc();
-      clickCount = 0;
-    }
-  });
-
-  fullScreenBtn.addEventListener('click', () => {
-    if (videoPlayer.requestFullscreen) {
-      videoPlayer.requestFullscreen();
-    } else if (videoPlayer.mozRequestFullScreen) {
-      videoPlayer.mozRequestFullScreen();
-    } else if (videoPlayer.webkitRequestFullscreen) {
-      videoPlayer.webkitRequestFullscreen();
-    } else if (videoPlayer.msRequestFullscreen) {
-      videoPlayer.msRequestFullscreen();
-    }
-  });
-
-  shareBtn.addEventListener('click', () => {
-    const url = window.location.href;
-    navigator.clipboard.writeText(url).then(() => {
-      alert('Video URL copied to clipboard!' + url);
-    });
-  });
-
-  restartBtn.addEventListener('click', () => {
-    videoPlayer.currentTime = 0;
-    videoPlayer.play();
-    playPauseBtn.classList.remove('fa-play');
-    playPauseBtn.classList.add('fa-pause');
-  });
-
-  prevBtn.addEventListener('click', () => {
-    fetch(`/videos/get-prev-next-ids/${currentVideoId}/`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.prev_video_id) {
-          window.location.href = `{% url 'video-detail' 1 %}`.replace(
-            '1',
-            data.prev_video_id
-          );
-        } else {
-          prevBtn.classList.toggle('text-primary');
-          prevBtn.classList.toggle('disabled');
-        }
-      });
-  });
-
-  nextBtn.addEventListener('click', () => {
-    fetch(`/videos/get-prev-next-ids/${currentVideoId}/`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.next_video_id) {
-          window.location.href = `{% url 'video-detail' 1 %}`.replace(
-            '1',
-            data.next_video_id
-          );
-        } else {
-          nextBtn.classList.toggle('text-primary');
-          nextBtn.classList.toggle('disabled');
-        }
-      });
-  });
-</script>
+{% include 'videos/includes/videos_list_script.html' %}
 {% endblock %}
