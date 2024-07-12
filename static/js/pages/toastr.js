@@ -11,4 +11,3 @@ function showToast(heading, text, icon) {
   });
 }
 
-console.log('Hi welcome');
