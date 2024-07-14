@@ -110,7 +110,6 @@ deletevideoview = DeleteVideoView.as_view()
 
 
 class VideoDetailView(ActiveUserRequiredMixin, FilterView):
-    require_staff = True
     filterset_class = VideoFilter
     model = Video
     template_name = "videos/video-details.html"
