@@ -14,7 +14,7 @@ from django.contrib import messages
 from django_filters.views import FilterView
 
 
-class VideoListView(ActiveUserRequiredMixin,FilterView):
+class VideoListView(ActiveUserRequiredMixin, FilterView):
     filterset_class = VideoFilter
     model = Video
     template_name = "videos/home.html"
@@ -31,7 +31,8 @@ class VideoListView(ActiveUserRequiredMixin,FilterView):
 home = VideoListView.as_view()
 
 
-class Videos(ActiveUserRequiredMixin,FilterView):
+class Videos(ActiveUserRequiredMixin, FilterView):
+    require_staff = True
     filterset_class = VideoFilter
     model = Video
     template_name = "videos/videos_list.html"
@@ -49,6 +50,7 @@ videos = Videos.as_view()
 
 
 class AddOrUpdateVideoView(ActiveUserRequiredMixin, View):
+    require_staff = True
     form_class = VideoForm
 
     def post(self, request, *args, **kwargs):
@@ -78,6 +80,8 @@ addorupdatevideoview = AddOrUpdateVideoView.as_view()
 
 
 class GetVideoView(ActiveUserRequiredMixin, View):
+    require_staff = True
+
     def get(self, request, video_id, *args, **kwargs):
         video = get_object_or_404(Video, id=video_id)
         data = {
@@ -92,6 +96,8 @@ getvideoview = GetVideoView.as_view()
 
 
 class DeleteVideoView(ActiveUserRequiredMixin, View):
+    require_staff = True
+
     def post(self, request, *args, **kwargs):
         video_id = request.POST.get("video_id")
         video = get_object_or_404(Video, id=video_id)
@@ -104,6 +110,7 @@ deletevideoview = DeleteVideoView.as_view()
 
 
 class VideoDetailView(ActiveUserRequiredMixin, FilterView):
+    require_staff = True
     filterset_class = VideoFilter
     model = Video
     template_name = "videos/video-details.html"
@@ -132,6 +139,8 @@ videodetailview = VideoDetailView.as_view()
 
 
 class GetPrevNextIDsView(ActiveUserRequiredMixin, View):
+    require_staff = True
+
     def get(self, request, pk):
         video = get_object_or_404(Video, pk=pk)
         all_videos = Video.objects.order_by("-date_posted")
