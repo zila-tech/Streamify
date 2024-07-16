@@ -60,7 +60,7 @@
                                             </td>
                                             <td>
                                                 <p class="mb-0">
-                                                    <span class="badge {% if not video.thumbnail %}badge-warning-light{% endif %}">
+                                                    <span class="{% if not video.thumbnail %}badge badge-warning-light{% endif %}">
                                                         <i class="mdi {% if not video.thumbnail %}mdi-timer-sand{% else %}mdi-check{% endif %}"></i> 
                                                         {% if  video.thumbnail %}Yes{% else %}No{% endif %}
                                                     </span>
