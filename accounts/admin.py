@@ -2,7 +2,11 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from accounts.forms import CustomUserChangeForm, CustomUserCreationForm
 from accounts.models import Account
+from django.utils.translation import gettext_lazy as _
 
+admin.site.site_header = _("Streamify Administration")
+admin.site.site_title = _("Streamify Admin Portal")
+admin.site.index_title = _("Welcome to the Streamify Admin Portal")
 
 @admin.register(Account)
 class AccountAdmin(UserAdmin):
