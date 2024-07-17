@@ -138,8 +138,6 @@ videodetailview = VideoDetailView.as_view()
 
 
 class GetPrevNextIDsView(ActiveUserRequiredMixin, View):
-    require_staff = True
-
     def get(self, request, pk):
         video = get_object_or_404(Video, pk=pk)
         all_videos = Video.objects.order_by("-date_posted")
